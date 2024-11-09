@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <title>CORS Sequence Diagram</title>
+    <style>
+        .diagram-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="step1" class="diagram-container">
+        <pre class="mermaid">
+        sequenceDiagram
+            participant Browser
+            participant Server
+            Browser->>Server: OPTIONS /api/resource
+            Note over Browser,Server: Preflight request to check CORS policy
+        </pre>
+    </div>
+
+    <div id="step2" class="diagram-container">
+        <pre class="mermaid">
+        sequenceDiagram
+            participant Browser
+            participant Server
+            Server->>Browser: HTTP/1.1 200 OK
+            Server->>Browser: Access-Control-Allow-Origin: *
+            Server->>Browser: Access-Control-Allow-Methods: GET, POST, OPTIONS
+            Server->>Browser: Access-Control-Allow-Headers: Content-Type
+        </pre>
+    </div>
+
+    <div id="step3" class="diagram-container">
+        <pre class="mermaid">
+        sequenceDiagram
+            participant Browser
+            participant Server
+            Browser->>Server: GET /api/resource
+            Note over Browser,Server: Actual request after successful preflight
+            Server->>Browser: HTTP/1.1 200 OK
+            Server->>Browser: <Response Data>
+        </pre>
+    </div>
+
+    <button onclick="nextStep()">Next Step</button>
+
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.diagram-container');
+
+        function showStep(index) {
+            steps.forEach((step, i) => {
+                step.style.display = i === index ? 'block' : 'none';
+            });
+            mermaid.init(undefined, steps[index]);
+        }
+
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+            } else {
+                currentStep = 0;
+            }
+            showStep(currentStep);
+        }
+
+        // Initialize the first step
+        showStep(currentStep);
+    </script>
+</body>
+</html>
